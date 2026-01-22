@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del Usuario</title>
+    <link rel="stylesheet" href="style/agenda.css">
+    <link rel="stylesheet" href="style/infoUser.css">
+</head>
+<body>
+    
+    <header class="header">
+        <h1>Mi Perfil:</h1>
+        <div>
+            <a href="agenda.html" class="btn-add">Volver</a>
+            <a href="index.html" class="btn-add">Salir</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="user-card">
+            <div class="profile-image">
+                <img src="https://www.pngall.com/wp-content/uploads/5/Profile-PNG-Pic.png" alt="Perfil">
+            </div>
+            
+            <div class="info-section">
+                <div class="info-item">
+                    <span class="label">Correo electrónico:</span>
+                    <span class="value" id="userEmail">No disponible</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="label">Fecha de inicio de sesión:</span>
+                    <span class="value" id="loginDate">No disponible</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const email = localStorage.getItem('userEmail');
+            const loginDate = localStorage.getItem('loginDate');
+            
+            if (email) {
+                document.getElementById('userEmail').textContent = email;
+            }
+            
+            if (loginDate) {
+                document.getElementById('loginDate').textContent = loginDate;
+            }
+        });
+    </script>
+</body>
+</html>

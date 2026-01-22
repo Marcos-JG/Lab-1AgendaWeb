@@ -1,0 +1,50 @@
+.user-card {
+    background-color: #1e2d47;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    border: 1px solid #2a3f5f;
+}
+
+.profile-image {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.profile-image img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #eb7207;
+    background: #f0f0f0;
+}
+
+.info-section {
+    margin-top: 16px;
+}
+
+.info-item {
+    background-color: #253650;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid #2a3f5f;
+}
+
+.label {
+    display: block;
+    font-weight: 600;
+    color: #eb7207;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.value {
+    display: block;
+    color: #ffffff;
+    font-size: 15px;
+    word-break: break-all;
+}

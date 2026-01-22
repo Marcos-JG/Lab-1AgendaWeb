@@ -14,16 +14,31 @@
         <div class="imagen">
             <img src="https://www.pngall.com/wp-content/uploads/5/Profile-PNG-Pic.png" alt="">
         </div>
-        <form action="agenda.html" method="get">
-            <label for="">Correo:
-                <input type="email" required placeholder="correo@ejemplo.com">
+        <form id="loginForm">
+            <label for="email">Correo:
+                <input type="email" id="email" name="email" required placeholder="correo@ejemplo.com">
             </label>
-            <label for="">Contraseña:
-                <input type="password" required minlength="6" title="La contraseña debe tener al menos 6 caracteres">
+            <label for="password">Contraseña:
+                <input type="password" id="password" name="password" required minlength="6" title="La contraseña debe tener al menos 6 caracteres">
             </label>
             <button type="submit">Iniciar sesión</button>
         </form>
     </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Guardar en localStorage
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('loginDate', new Date().toLocaleString('es-ES'));
+            
+            // Redirigir a la agenda
+            window.location.href = 'agenda.html';
+        });
+    </script>
 </body>
 
 </html>
