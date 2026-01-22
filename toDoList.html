@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tareas</title>
+    <link rel="stylesheet" href="style/agenda.css">
+    <link rel="stylesheet" href="style/toDoList.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>Mis Tareas:</h1>
+        <div>
+            <a href="infoUser.html" class="btn-add">Mi Perfil</a>
+            <a href="agenda.html" class="btn-add">Agenda</a>
+            <a href="index.html" class="btn-add">Salir</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="form-container">
+            <h2>Agregar Nueva Tarea</h2>
+            <form id="taskForm">
+                <div class="form-group">
+                    <input type="text" id="taskInput" placeholder="Descripción de la tarea" required>
+                </div>
+                <div class="form-group">
+                    <select id="prioritySelect" required>
+                        <option value="">Seleccionar prioridad</option>
+                        <option value="alta">Alta</option>
+                        <option value="media">Media</option>
+                        <option value="baja">Baja</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="date" id="dueDateInput">
+                </div>
+                <button type="submit" class="btn-add">Agregar Tarea</button>
+            </form>
+        </div>
+
+        <div class="tasks-section">
+            <div id="tasksContainer"></div>
+        </div>
+    </main>
+
+    <script>
+        class Task {
+            constructor(id, description, priority, dueDate) {
+                this.id = id;
+                this.description = description;
+                this.priority = priority;
+                this.dueDate = dueDate;
+                this.completed = false;
+                this.createdAt = new Date();
+            }
+        }
+
+        class TaskManager {
+            constructor() {
+                this.tasks = this.loadTasks();
+            }
+
+            loadTasks() {
+                const saved = localStorage.getItem('tasks');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(this.tasks));
+            }
+
+            addTask(description, priority, dueDate) {
+                const id = Date.now();
+                const task = new Task(id, description, priority, dueDate);
+                this.tasks.push(task);
+                this.saveTasks();
+                return task;
+            }
+
+            deleteTask(id) {
+                this.tasks = this.tasks.filter(task => task.id !== id);
+                this.saveTasks();
+            }
+
+            updateTask(id, description, priority, dueDate) {
+                const task = this.tasks.find(t => t.id === id);
+                if (task) {
+                    task.description = description;
+                    task.priority = priority;
+                    task.dueDate = dueDate;
+                    this.saveTasks();
+                }
+            }
+
+            toggleTask(id) {
+                const task = this.tasks.find(t => t.id === id);
+                if (task) {
+                    task.completed = !task.completed;
+                    this.saveTasks();
+                }
+            }
+
+            getTasksSorted() {
+                const priorityOrder = { alta: 1, media: 2, baja: 3 };
+                return [...this.tasks].sort((a, b) => {
+                    return priorityOrder[a.priority] - priorityOrder[b.priority];
+                });
+            }
+        }
+
+        const taskManager = new TaskManager();
+        const form = document.getElementById('taskForm');
+        const taskInput = document.getElementById('taskInput');
+        const prioritySelect = document.getElementById('prioritySelect');
+        const dueDateInput = document.getElementById('dueDateInput');
+        const tasksContainer = document.getElementById('tasksContainer');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const description = taskInput.value.trim();
+            const priority = prioritySelect.value;
+            const dueDate = dueDateInput.value;
+
+            if (description && priority) {
+                taskManager.addTask(description, priority, dueDate);
+                taskInput.value = '';
+                prioritySelect.value = '';
+                dueDateInput.value = '';
+                renderTasks();
+            }
+        });
+
+        function getPriorityColor(priority) {
+            switch(priority) {
+                case 'alta': return '#ff4757';
+                case 'media': return '#ffa502';
+                case 'baja': return '#2ed573';
+                default: return '#6c757d';
+            }
+        }
+
+        function getPriorityText(priority) {
+            switch(priority) {
+                case 'alta': return 'ALTA';
+                case 'media': return 'MEDIA';
+                case 'baja': return 'BAJA';
+                default: return '';
+            }
+        }
+
+        function renderTasks() {
+            tasksContainer.innerHTML = '';
+            const sortedTasks = taskManager.getTasksSorted();
+
+            if (sortedTasks.length === 0) {
+                tasksContainer.innerHTML = '<div class="no-tasks">No hay tareas pendientes</div>';
+                return;
+            }
+
+            sortedTasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = `task-item ${task.completed ? 'completed' : ''}`;
+                
+                const priorityColor = getPriorityColor(task.priority);
+                const priorityText = getPriorityText(task.priority);
+                
+                taskElement.innerHTML = `
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} 
+                               onchange="handleToggle(${task.id})">
+                        <span class="priority-badge" style="background-color: ${priorityColor};">${priorityText}</span>
+                        <span class="task-description">${task.description}</span>
+                    </div>
+                    <div class="task-footer">
+                        ${task.dueDate ? `<span class="due-date">📅 ${task.dueDate}</span>` : ''}
+                        <div class="task-actions">
+                            <button class="btn-edit" onclick="editTask(${task.id})">Editar</button>
+                            <button class="btn-delete" onclick="deleteTask(${task.id})">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+                
+                tasksContainer.appendChild(taskElement);
+            });
+        }
+
+        function deleteTask(id) {
+            if (confirm('¿Seguro que deseas eliminar esta tarea?')) {
+                taskManager.deleteTask(id);
+                renderTasks();
+            }
+        }
+
+        function handleToggle(id) {
+            taskManager.toggleTask(id);
+            renderTasks();
+        }
+
+        function editTask(id) {
+            const task = taskManager.tasks.find(t => t.id === id);
+            if (task) {
+                const newDescription = prompt('Editar tarea:', task.description);
+                if (newDescription !== null && newDescription.trim()) {
+                    const newPriority = prompt('Prioridad (alta/media/baja):', task.priority);
+                    if (newPriority && ['alta', 'media', 'baja'].includes(newPriority)) {
+                        const newDueDate = prompt('Fecha de vencimiento (YYYY-MM-DD) - dejar vacío para ninguna:', task.dueDate || '');
+                        taskManager.updateTask(id, newDescription, newPriority, newDueDate);
+                        renderTasks();
+                    } else if (newPriority !== null) {
+                        alert('Prioridad inválida. Use: alta, media o baja');
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', renderTasks);
+    </script>
+
+</body>
+
+</html>
