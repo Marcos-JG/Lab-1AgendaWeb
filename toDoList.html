@@ -176,7 +176,7 @@
                         <span class="task-description">${task.description}</span>
                     </div>
                     <div class="task-footer">
-                        ${task.dueDate ? `<span class="due-date">📅 ${task.dueDate}</span>` : ''}
+                        ${task.dueDate ? `<span class="due-date"> ${task.dueDate}</span>` : ''}
                         <div class="task-actions">
                             <button class="btn-edit" onclick="editTask(${task.id})">Editar</button>
                             <button class="btn-delete" onclick="deleteTask(${task.id})">Eliminar</button>
